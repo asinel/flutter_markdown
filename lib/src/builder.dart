@@ -222,7 +222,7 @@ class MarkdownBuilder implements md.NodeVisitor {
         );
       }
 
-      _addBlockChild(child);
+      _addBlockChildren(<Widget>[child]);
     } else {
       final _InlineElement current = _inlines.removeLast();
       final _InlineElement parent = _inlines.last;
@@ -295,11 +295,11 @@ class MarkdownBuilder implements md.NodeVisitor {
     }
   }
 
-  void _addBlockChild(Widget child) {
+  void _addBlockChildren(List<Widget> children) {
     final _BlockElement parent = _blocks.last;
     if (parent.children.isNotEmpty)
       parent.children.add(new SizedBox(height: styleSheet.blockSpacing));
-    parent.children.add(child);
+    parent.children.addAll(children);
     parent.nextListIndex += 1;
   }
 
@@ -310,9 +310,7 @@ class MarkdownBuilder implements md.NodeVisitor {
 
     final _InlineElement inline = _inlines.single;
     if (inline.children.isNotEmpty) {
-      List<Widget> mergedInlines = _mergeInlineChildren(inline);
-      final Wrap wrap = new Wrap(children: mergedInlines);
-      _addBlockChild(wrap);
+      _addBlockChildren(_mergeInlineChildren(inline));
       _inlines.clear();
     }
   }
